@@ -1,33 +1,64 @@
-#include <sys/time.h>
-#include <time.h>
-#include <stdio.h>
-#include <stdlib.h>  /*  for malloc */
-#include <unistd.h>  // for sleep()
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <algorithm>
+#include <iterator>
+#include <vector>
+#include "bruteforce.hpp"
 using namespace std;
 
 
-static const int ARR_SIZE= 20;
-float** distances = new float*[ARR_SIZE];
-int NUMELEMENTS = 10;
-float* s = new float[NUMELEMENTS];
+static const int ARR_SIZE = 20;
+double** distances = new double*[ARR_SIZE];
+int Factorial(int n);
+int GetDistances();
+void RecordResults();
 
-
-void demo()
+int main()
 {
-  struct timeval * t;
-  struct timezone * z;
 
-  t = (struct timeval *)malloc(sizeof(struct timeval));
-  z =(struct timezone *) malloc(sizeof(struct timezone));
-  for (int i = 0; i < 10; i++)
-  { 
-      gettimeofday(t,z);
-      printf("\ntime is %d seconds %d microseconds\n",t->tv_sec,t->tv_usec);  
-     // sleep(1);
-  }
+	GetDistances();
+	int numCities;
+	cout << "Enter the number of Cities to Run: ";
+	cin >> numCities;
+	int NUMELEMENTS = numCities - 1;
+
+	int permsThisCall = Factorial(NUMELEMENTS);
+	BruteForce b(distances, NUMELEMENTS);
+
+	cout << "Perms This Call: " << permsThisCall << endl;
+
+	//Exec Brute Force
+	b.perm1(permsThisCall);
+	int minCost = b.GetMinCost();
+	cout << "\nMin Cost: " << minCost << endl;
+	int totalTime = b.GetTotalTime(); //timeAfter - timeBefore;
+	cout << "Total Run Time: " << totalTime << " seconds." << endl;
+
+	
+
+
+	return 0;
+}
+
+void RecordResults(int numCities, int minCost, int totalTime)
+{
+	ofstream outFS("results.csv");
+	outFS << "No. of Cities," << "BF Optimal Cost," << "BF Run-Time,"
+	<< "GA Optimal Cost," << "GA Run-Time," << "GA Pct of Optimal" << endl;
+	outFS << numCities << "," << minCost << "," << totalTime << endl;
+
+	outFS.close();
+}
+
+int Factorial(int n)
+{
+	int factorial = 1;
+	for(int i = 1; i <= n; ++i)
+	{
+		factorial *= i;
+	}
+	return factorial;
 }
 int GetDistances()
 {
@@ -37,7 +68,7 @@ int GetDistances()
 	{
 		for(int i = 0; i < ARR_SIZE; ++i)
 		{
-			distances[i] = new float[ARR_SIZE];
+			distances[i] = new double[ARR_SIZE];
 			for(int j = 0; j < ARR_SIZE; ++j)
 			{
 				if(i == j)
@@ -53,7 +84,19 @@ int GetDistances()
 		return 0;
 	}
 }
-void PrintDistances()
+/*void PrintDistances()
+{
+	for(int i = 0; i < 20; ++i)
+	{
+		cout << "|";
+		for(int j = 0; j < 20; ++j)
+		{
+			cout << distances[i][j] << " | ";
+		}
+		cout << "\n------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+	}
+}*/
+/*void PrintDistances()
 {
 	for(int i = 0; i < 20; ++i)
 	{
@@ -69,21 +112,46 @@ void printS()
 {
 	for(int i = 0; i < NUMELEMENTS; ++i)
 	{
-		cout << s[i] << " | ";
+		cout << s[i] << ", ";
 	}
 }
-void swap(int m, int k)
+/*void swap(int m, int k)
 {
-	float temp = s[m];
+	int temp = s[m];
+	//cout << "TEMP: " << temp << endl;
 	s[m] = s[k];
 	s[k] = temp;
+}
+void BruteForce()
+{
+	int j = 0;
+	
+	
+	int weight = 0;
+	//cout << "****LOOP START****" << endl;
+	for(int i = 0; i < NUMELEMENTS; ++i)
+	{
+		//cout << "****TESTING****" << endl;
+		weight += distances[j][s[i]];
+		
+		//cout << "Current WEIGHT: " << weight << endl;
+		//cout << "Current MIN COST: " << minCost << endl;
+		//cout << "S AT I: " << s[i] << endl; 
+		j = s[i];
+		//cout << "NEW MIN COST: " << minCost << endl;
+	}
+	//cout << "****LOOP END****" << endl;
+	weight += distances[j][0];
+	minCost = min(minCost, weight);
+	//cout << "****FUNCTION END****" << endl;
+
 }
 void perm1(int permsThisCall) 
 {
      int m, k, p , q, i;
-     cout << "\nARRAY Before: " << endl;
-     cout << "---------" << endl;
-     printS();
+     //cout << "\nARRAY Before: " << endl;
+    // cout << "---------" << endl;
+     //printS();
      for(i = 1; i < permsThisCall; i++)
      {
        m = NUMELEMENTS-2;
@@ -105,27 +173,10 @@ void perm1(int permsThisCall)
          p++;
          q--;
        }
-       cout << "\nARRAY After: " << endl;
-       cout << "---------" << endl;
-       printS();
+       //cout << "\nARRAY After: " << endl;
+       //cout << "---------" << endl;
+      //printS();
+       //BRUTE FORCE APPROACH
+       BruteForce();
      }
-}
-
-
-
-int main()
-{
-
-	GetDistances();
-	PrintDistances();
-
-	for(int i = 0; i < NUMELEMENTS; ++i)
-	{
-		s[i] = distances[0][i];
-	}
-
-	perm1(9);
-
-	demo();
-	return 0;
-}
+}*/
