@@ -8,10 +8,10 @@ using namespace std;
 class BruteForce {
 
 private:
-	int minCost;
+	double minCost;
 	int NUMELEMENTS;
 	int totalTime;
-	static const int MAXTIME = 500;
+	static const int MAXTIME = 300;
 	double** distances;
 	int* s;
 	Timer t;
@@ -21,8 +21,9 @@ public:
 	void Compute();
 	void perm1(int permsThisCall);
 	void swap(int m, int k);
-	int GetMinCost();
+	double GetMinCost();
 	int GetTotalTime();
+	void printS();
 
 };
 

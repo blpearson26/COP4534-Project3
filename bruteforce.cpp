@@ -4,7 +4,7 @@ BruteForce::BruteForce(double** distances, int numElements)
 {
 	this->distances = distances;
 	this->NUMELEMENTS = numElements;
-	this->minCost = 9999;
+	this->minCost = 99999;
 	this->s = new int[NUMELEMENTS];
 	//Fill s array
 	for(int i = 0; i < NUMELEMENTS; ++i)
@@ -16,7 +16,7 @@ void BruteForce::Compute()
 {
 	
 	int j = 0;
-	int weight = 0;
+	double weight = 0.00;
 
 	for(int i = 0; i < NUMELEMENTS; ++i)
 	{
@@ -25,6 +25,7 @@ void BruteForce::Compute()
 	}
 
 	weight += distances[j][0];
+	cout << "Current Perms Cost: " << weight << endl;
 	minCost = min(minCost, weight);
 
 }
@@ -38,6 +39,10 @@ void BruteForce::perm1(int permsThisCall)
 {
 	t.SetStartTime();
     int m, k, p , q, i;
+    cout << "\nARRAY Before: " << endl;
+    cout << "---------" << endl;
+    printS();
+    Compute();
 
     for(i = 1; i < permsThisCall; i++)
     {
@@ -45,7 +50,7 @@ void BruteForce::perm1(int permsThisCall)
 		totalTime = t.GetTotalTime();
 		if(totalTime >= MAXTIME)
 		{
-			cout << "RUNTIME EXCEEDED, EXITING PROGRAM!!" << endl;
+			cout << "Max Run-Time Exceeded! Terminating Brute Force Solution..." << endl;
 			break;
 		}
 		else
@@ -68,16 +73,27 @@ void BruteForce::perm1(int permsThisCall)
          		swap(p,q);
         		p++;
          		q--;
-       		}	
+       		}
+       		cout << "\nARRAY After: " << endl;
+   	 		cout << "---------" << endl;
+    		printS();	
        		Compute();
        	}
     }
 }
-int BruteForce::GetMinCost()
+double BruteForce::GetMinCost()
 {
 	return this->minCost;
 }
 int BruteForce::GetTotalTime()
 {
 	return this->totalTime;
+}
+void BruteForce::printS()
+{
+	for(int i = 0; i < NUMELEMENTS; ++i)
+	{
+		cout << s[i] << ", ";
+	}
+	cout << endl;
 }
